@@ -62,7 +62,7 @@ export default function ChatDashboard({ user }: ChatDashboardProps) {
     
       // Inform backend about the connected user
       console.log("Emitting addUser event with user ID:", user.id)
-      socketInstance.emit("addUser", String(user.id))
+      socketInstance.emit("addUser", String(user.id));
     })
 
     socketInstance.on("connect_error", (error) => {
