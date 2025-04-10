@@ -10,11 +10,11 @@ module.exports = (io) => {
     // Add user to online list
     socket.on('addUser', async (userId) => {
       console.log('addUser event received for userId:', userId);
-      
-      if (!onlineUsers.some((user) => user.userId === userId)) {
-        onlineUsers.push({ userId, socketId: socket.id });
+      const userIdStr = String(userId);
+      if (!onlineUsers.some((user) => user.userId === userIdStr)) {
+        onlineUsers.push({ userId: userIdStr, socketId: socket.id });
         console.log('User added to online list. Updated list:', onlineUsers);
-      } else {
+      }else {
         console.log('User already in online list');
       }
 
