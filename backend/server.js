@@ -10,7 +10,12 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  origin: [
+    process.env.FRONTEND_URL,
+    "http://localhost:3000",
+    "https://chat-app-gelj.vercel.app",
+    "https://chat-app-gelj-dr53ufgs0-keepitsimpleformes-projects.vercel.app"
+  ],
   credentials: true
 }));
 app.use(express.json());
@@ -53,7 +58,12 @@ app.use('/api/messages', authMiddleware, messageRoutes);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: [
+      process.env.FRONTEND_URL,
+      "http://localhost:3000",
+      "https://chat-app-gelj.vercel.app",
+      "https://chat-app-gelj-dr53ufgs0-keepitsimpleformes-projects.vercel.app"
+    ],
     methods: ["GET", "POST"],
     credentials: true
   }
