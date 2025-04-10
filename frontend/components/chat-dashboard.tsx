@@ -62,7 +62,7 @@ export default function ChatDashboard({ user }: ChatDashboardProps) {
     
       // Inform backend about the connected user
       console.log("Emitting addUser event with user ID:", user.id)
-      socketInstance.emit("addUser", user.id)
+      socketInstance.emit("addUser", String(user.id))
     })
 
     socketInstance.on("connect_error", (error) => {
@@ -73,7 +73,7 @@ export default function ChatDashboard({ user }: ChatDashboardProps) {
       console.log("Received online users:", users)
       console.log("Current user ID:", user.id)
       // Filter out the current user from the online users list
-      const filteredUsers = users.filter((u: OnlineUser) => u.id !== user.id)
+      const filteredUsers = users.filter((u: OnlineUser) => String(u.id) !== String(user.id))
       console.log("Filtered online users (excluding current user):", filteredUsers)
       setOnlineUsers(filteredUsers)
     })
