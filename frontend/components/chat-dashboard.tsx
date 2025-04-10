@@ -220,7 +220,7 @@ export default function ChatDashboard({ user }: ChatDashboardProps) {
               <div
                 key={u.id}
                 className={`p-3 rounded-lg cursor-pointer ${
-                  selectedUser?.id === u.id ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                  selectedUser?.id === u.id ? "bg-[#52a9ff] text-primary-foreground" : "hover:bg-muted"
                 }`}
                 onClick={() => handleUserSelect(u)}
               >

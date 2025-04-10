@@ -47,10 +47,19 @@ export default function LoginForm() {
     const email = formData.get("email") as string
     const password = formData.get("password") as string
 
-    console.log("Attempting login with:", { email, password: "***" })
+    console.log("Login attempt:")
+    console.log("API URL:", process.env.NEXT_PUBLIC_API_URL)
+    console.log("Email:", email)
+    console.log("Request details:", {
+      url: `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include"
+    })
 
     try {
-      console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
         method: "POST",
         headers: {
@@ -60,7 +69,8 @@ export default function LoginForm() {
         credentials: "include",
       })
 
-      console.log("Login response status:", response.status)
+      console.log("Response status:", response.status)
+      console.log("Response headers:", Object.fromEntries(response.headers.entries()))
       
       if (!response.ok) {
         const errorData = await response.text()
@@ -139,7 +149,7 @@ export default function LoginForm() {
 
       console.log("Redirecting to dashboard...")
       // Force a hard refresh to the dashboard page
-      window.location.replace("/dashboard")
+      window.location.replace("/")
       
     } catch (error) {
       console.error("Registration error:", error)
