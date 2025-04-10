@@ -46,9 +46,8 @@ export default function ChatDashboard({ user }: ChatDashboardProps) {
 
   // Connect to Socket.io server
   useEffect(() => {
-    // In a real app, this would be your actual Socket.io server URL
     const token = localStorage.getItem("token")
-    console.log("Connecting to Socket.io with token:", token ? "Token exists" : "No token")
+    console.log("Attempting Socket.io connection to:", process.env.NEXT_PUBLIC_API_URL)
     console.log("Current user ID:", user.id)
     
     const socketInstance = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001", {
@@ -59,19 +58,20 @@ export default function ChatDashboard({ user }: ChatDashboardProps) {
 
     socketInstance.on("connect", () => {
       console.log("Connected to Socket.io server with socket ID:", socketInstance.id)
+      console.log("Connection established to:", process.env.NEXT_PUBLIC_API_URL)
     
       // Inform backend about the connected user
       console.log("Emitting addUser event with user ID:", user.id)
-      socketInstance.emit("addUser", String(user.id));
+      socketInstance.emit("addUser", String(user.id))
     })
 
     socketInstance.on("connect_error", (error) => {
-      console.error("Socket connection error:", error)
+      console.error("Socket connection error:", error.message)
     })
 
     socketInstance.on("onlineUsers", (users) => {
-      console.log("Received online users:", users)
-      console.log("Current user ID:", user.id)
+      console.log("Received onlineUsers event with data:", users)
+      console.log("Current user ID for filtering:", user.id)
       // Filter out the current user from the online users list
       const filteredUsers = users.filter((u: OnlineUser) => String(u.id) !== String(user.id))
       console.log("Filtered online users (excluding current user):", filteredUsers)
@@ -116,10 +116,10 @@ export default function ChatDashboard({ user }: ChatDashboardProps) {
     setSocket(socketInstance)
 
     return () => {
-      console.log("Cleaning up socket connection")
+      console.log("Cleaning up socket connection for user:", user.id)
       socketInstance.disconnect()
     }
-  }, [user.id, selectedUser, toast])
+  }, [user.id])
 
   // Scroll to bottom of messages
   useEffect(() => {

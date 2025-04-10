@@ -4,19 +4,20 @@ const Message = require('./models/message');
 
 module.exports = (io) => {
   io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id);
+    console.log('Socket Connection Attempt - ID:', socket.id);
     console.log('Current online users:', onlineUsers);
 
     // Add user to online list
     socket.on('addUser', async (userId) => {
       console.log('addUser event received for userId:', userId);
-      const userIdStr = String(userId);
-      if (!onlineUsers.some((user) => user.userId === userIdStr)) {
-        onlineUsers.push({ userId: userIdStr, socketId: socket.id });
-        console.log('User added to online list. Updated list:', onlineUsers);
-      }else {
-        console.log('User already in online list');
-      }
+      console.log('Socket ID:', socket.id);
+      
+      // Remove any existing entries for this user
+      onlineUsers = onlineUsers.filter((user) => user.userId !== userId);
+      
+      // Add the new user connection
+      onlineUsers.push({ userId, socketId: socket.id });
+      console.log('Updated online users list:', onlineUsers);
 
       // Fetch user details from database
       try {
@@ -38,7 +39,7 @@ module.exports = (io) => {
       // Emit updated list to all clients
       const formattedUsers = onlineUsers.map((u) => ({
         id: u.userId,
-        name: u.userName || `User ${u.userId}`, // Use actual name if available
+        name: u.userName || `User ${u.userId}`,
       }));
       console.log('Emitting onlineUsers event with:', formattedUsers);
       io.emit('onlineUsers', formattedUsers);
@@ -87,20 +88,23 @@ module.exports = (io) => {
       }
     });
 
-    // On disconnect, remove user
+    // Handle disconnect
     socket.on('disconnect', () => {
-      console.log('User disconnecting:', socket.id);
+      console.log('User disconnecting - Socket ID:', socket.id);
+      const disconnectedUser = onlineUsers.find(user => user.socketId === socket.id);
+      if (disconnectedUser) {
+        console.log('User disconnected:', disconnectedUser);
+      }
+      
       onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
       console.log('Updated online users after disconnect:', onlineUsers);
 
       const formattedUsers = onlineUsers.map((u) => ({
         id: u.userId,
-        name: u.userName || `User ${u.userId}`, // Use actual name if available
+        name: u.userName || `User ${u.userId}`,
       }));
       console.log('Emitting onlineUsers event after disconnect:', formattedUsers);
       io.emit('onlineUsers', formattedUsers);
-
-      console.log('A user disconnected:', socket.id);
     });
   });
 };

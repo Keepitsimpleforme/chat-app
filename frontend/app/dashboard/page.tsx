@@ -22,7 +22,7 @@ export default function DashboardPage() {
     const fetchUserData = async () => {
       try {
         console.log("Fetching user data from backend...")
-        const response = await fetch("http://localhost:5001/api/users/me", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me`, {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`,
@@ -32,6 +32,8 @@ export default function DashboardPage() {
         })
 
         if (!response.ok) {
+          const errorData = await response.text()
+          console.error("Failed to fetch user data:", errorData)
           throw new Error("Failed to fetch user data")
         }
 
@@ -49,12 +51,9 @@ export default function DashboardPage() {
         })
       } catch (error) {
         console.error("Error fetching user data:", error)
-        // Fallback to mock user if API call fails
-        setUser({
-          id: "mock-user-1",
-          name: "Demo User",
-          email: "user@example.com",
-        })
+        // Remove the mock user fallback in production
+        localStorage.removeItem("token")
+        window.location.replace("/")
       } finally {
         setIsLoading(false)
       }
